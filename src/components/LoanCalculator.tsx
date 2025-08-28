@@ -82,14 +82,25 @@ const LoanCalculator = () => {
     return Math.floor(num / 1000) * 1000;
   };
 
-  // Calculate based on new business rules
+  // Calculate based on PMT formula
   const calculateLoan = () => {
     if (!priceMmk || priceMmk <= 0) return;
 
-    const currencyRate = EXCHANGE_RATES[currency];
+    // Get annual interest rate and convert to monthly
+    const annualRate = getDeductionRate(term, method);
+    const monthlyRate = annualRate / 12;
     
-    // New calculation: (Currency Rate × Term) - Product Price (MMK)
-    const monthlyRepayment = (currencyRate * term) - priceMmk;
+    // PMT formula: [P × r × (1 + r)^n] / [(1 + r)^n - 1]
+    // Where P = principal, r = monthly rate, n = number of payments
+    let monthlyRepayment;
+    if (monthlyRate === 0) {
+      // If no interest, just divide principal by term
+      monthlyRepayment = priceMmk / term;
+    } else {
+      const numerator = priceMmk * monthlyRate * Math.pow(1 + monthlyRate, term);
+      const denominator = Math.pow(1 + monthlyRate, term) - 1;
+      monthlyRepayment = numerator / denominator;
+    }
     
     // Minimum salary requirement: 25% of absolute monthly repayment, rounded down to nearest 1000
     const minSalaryRequirement = roundDownToNearest1000(Math.abs(monthlyRepayment) * 0.25);
@@ -257,7 +268,7 @@ const LoanCalculator = () => {
                 <div className="space-y-1">
                   <Label className="font-semibold">Monthly Repayment</Label>
                   <div className="text-xs text-muted-foreground">
-                    ({formatCurrency(EXCHANGE_RATES[currency])} × {term}) - {formatCurrency(priceMmk)}
+                    PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate
                   </div>
                 </div>
                 <span className={`text-lg font-bold ${results.monthlyRepayment < 0 ? 'text-destructive' : 'text-primary'}`}>
