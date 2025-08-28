@@ -5,15 +5,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Interest rates data structure
-const RATES = [
-  { term: 3, method: 'Salary Deduction', bank: 'Yoma Bank Deduction', rate: 0.0376 },
-  { term: 6, method: 'Salary Deduction', bank: 'Yoma Bank Deduction', rate: 0.0376 },
-  { term: 3, method: 'Salary Deduction', bank: 'Other Bank', rate: 0.041 },
-  { term: 6, method: 'Salary Deduction', bank: 'Other Bank', rate: 0.041 },
-  { term: 3, method: 'Cash Payment', bank: 'Standard', rate: 0.045 },
-  { term: 6, method: 'Cash Payment', bank: 'Standard', rate: 0.045 },
-];
+// Business rules for interest rates
+const getInterestRate = (term: number, method: string): number => {
+  if (term === 3 || term === 6) {
+    return method === 'Salary Deduction' ? 0.0376 : 0.041;
+  } else if (term === 9 || term === 12) {
+    return method === 'Salary Deduction' ? 0.0261 : 0.0279;
+  }
+  return 0;
+};
+
+// Business rules for admin fees
+const getAdminFee = (priceMmk: number, method: string): number => {
+  if (priceMmk <= 100000) {
+    return method === 'Salary Deduction' ? 5000 : 5300;
+  }
+  return 0; // Can be expanded for other price ranges
+};
 
 // Exchange rates (mock data)
 const EXCHANGE_RATES: Record<string, number> = {
@@ -27,7 +35,6 @@ const EXCHANGE_RATES: Record<string, number> = {
 const LoanCalculator = () => {
   const [term, setTerm] = useState<number>(3);
   const [method, setMethod] = useState<string>('Salary Deduction');
-  const [bank, setBank] = useState<string>('Yoma Bank Deduction');
   const [currency, setCurrency] = useState<string>('USD');
   const [productPrice, setProductPrice] = useState<string>('');
   const [priceMmk, setPriceMmk] = useState<number>(0);
@@ -35,8 +42,10 @@ const LoanCalculator = () => {
   const [results, setResults] = useState({
     monthlyRepayment: 0,
     totalRepayment: 0,
-    monthlyInterest: 0,
+    interestAmount: 0,
+    adminFee: 0,
     interestRate: 0,
+    minSalaryRequirement: 0,
   });
 
   // Update MMK price when currency or product price changes
@@ -49,53 +58,35 @@ const LoanCalculator = () => {
     }
   }, [productPrice, currency]);
 
-  // Get available banks for selected method
-  const availableBanks = RATES
-    .filter(rate => rate.method === method)
-    .map(rate => rate.bank)
-    .filter((bank, index, arr) => arr.indexOf(bank) === index);
 
-  // Calculate loan
+  // Calculate loan based on business rules
   const calculateLoan = () => {
     if (!priceMmk || priceMmk <= 0) return;
 
-    // Find matching interest rate
-    const rateData = RATES.find(
-      rate => rate.term === term && rate.method === method && rate.bank === bank
-    );
-
-    if (!rateData) return;
-
     const principal = priceMmk;
-    const interestRate = rateData.rate;
-    const monthlyInterest = principal * interestRate;
-    const monthlyRepayment = (principal / term) + monthlyInterest;
+    const interestRate = getInterestRate(term, method);
+    const interestAmount = principal * interestRate;
+    const adminFee = getAdminFee(priceMmk, method);
+    const monthlyRepayment = (principal + interestAmount + adminFee) / term;
     const totalRepayment = monthlyRepayment * term;
+    
+    // Minimum salary requirement: 25% rule, rounded down to nearest 10,000
+    const minSalaryRequirement = Math.floor((monthlyRepayment * 0.25) / 10000) * 10000;
 
     setResults({
       monthlyRepayment,
       totalRepayment,
-      monthlyInterest,
+      interestAmount,
+      adminFee,
       interestRate,
+      minSalaryRequirement,
     });
   };
 
   // Auto-calculate when inputs change
   useEffect(() => {
     calculateLoan();
-  }, [term, method, bank, priceMmk]);
-
-  // Reset bank when method changes
-  useEffect(() => {
-    const newAvailableBanks = RATES
-      .filter(rate => rate.method === method)
-      .map(rate => rate.bank)
-      .filter((bank, index, arr) => arr.indexOf(bank) === index);
-    
-    if (newAvailableBanks.length > 0 && !newAvailableBanks.includes(bank)) {
-      setBank(newAvailableBanks[0]);
-    }
-  }, [method, bank]);
+  }, [term, method, priceMmk]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -129,6 +120,8 @@ const LoanCalculator = () => {
                 <SelectContent>
                   <SelectItem value="3">3 months</SelectItem>
                   <SelectItem value="6">6 months</SelectItem>
+                  <SelectItem value="9">9 months</SelectItem>
+                  <SelectItem value="12">12 months</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -142,27 +135,11 @@ const LoanCalculator = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Salary Deduction">Salary Deduction</SelectItem>
-                  <SelectItem value="Cash Payment">Cash Payment</SelectItem>
+                  <SelectItem value="Yoma Bank Deduction">Yoma Bank Deduction</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Bank Option */}
-            <div className="space-y-2">
-              <Label htmlFor="bank">Bank Option</Label>
-              <Select value={bank} onValueChange={setBank}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableBanks.map((bankOption) => (
-                    <SelectItem key={bankOption} value={bankOption}>
-                      {bankOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
             {/* Currency */}
             <div className="space-y-2">
@@ -229,8 +206,13 @@ const LoanCalculator = () => {
               </div>
               
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-muted-foreground">Monthly Interest</Label>
-                <span className="font-semibold">{formatCurrency(results.monthlyInterest)} MMK</span>
+                <Label className="text-sm text-muted-foreground">Interest Amount</Label>
+                <span className="font-semibold">{formatCurrency(results.interestAmount)} MMK</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Label className="text-sm text-muted-foreground">Admin Fee</Label>
+                <span className="font-semibold">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
               <div className="flex justify-between items-center py-3 border-t border-b bg-primary/5 rounded-lg px-3">
@@ -248,8 +230,15 @@ const LoanCalculator = () => {
               </div>
               
               <div className="flex justify-between items-center text-sm text-muted-foreground">
-                <Label>Total Interest Paid</Label>
-                <span>{formatCurrency(results.totalRepayment - priceMmk)} MMK</span>
+                <Label>Total Interest + Fees</Label>
+                <span>{formatCurrency(results.interestAmount + results.adminFee)} MMK</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-3 border-t bg-muted/30 rounded-lg px-3">
+                <Label className="font-semibold text-sm">Minimum Salary Required</Label>
+                <span className="text-lg font-bold text-accent-foreground">
+                  {formatCurrency(results.minSalaryRequirement)} MMK
+                </span>
               </div>
             </div>
           </CardContent>
