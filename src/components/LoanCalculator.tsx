@@ -5,30 +5,50 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Business rules for interest rates
-const getInterestRate = (term: number, method: string): number => {
-  if (term === 3 || term === 6) {
+// Business rules for deduction rates
+const getDeductionRate = (term: number, method: string): number => {
+  if (term >= 3 && term <= 6) {
     return method === 'Salary Deduction' ? 0.0376 : 0.041;
-  } else if (term === 9 || term === 12) {
+  } else if (term >= 9 && term <= 12) {
     return method === 'Salary Deduction' ? 0.0261 : 0.0279;
   }
   return 0;
 };
 
-// Business rules for admin fees
+// Business rules for admin fees - expanded table
 const getAdminFee = (priceMmk: number, method: string): number => {
-  if (priceMmk <= 100000) {
-    return method === 'Salary Deduction' ? 5000 : 5300;
+  const adminFeeRanges = [
+    { max: 100000, salary: 5000, yoma: 5300 },
+    { max: 300000, salary: 8000, yoma: 8400 },
+    { max: 500000, salary: 13500, yoma: 14200 },
+    { max: 1000000, salary: 18500, yoma: 19500 },
+    { max: 2000000, salary: 30000, yoma: 31500 },
+    { max: 3000000, salary: 45000, yoma: 47300 },
+    { max: 4000000, salary: 60000, yoma: 63000 },
+    { max: 5000000, salary: 80000, yoma: 84000 },
+    { max: 6000000, salary: 100000, yoma: 105000 },
+    { max: 7000000, salary: 140000, yoma: 147000 },
+    { max: 8000000, salary: 160000, yoma: 168000 },
+    { max: 10000000, salary: 180000, yoma: 189000 },
+    { max: 20000000, salary: 230000, yoma: 241500 },
+    { max: Infinity, salary: 400000, yoma: 420000 },
+  ];
+
+  for (const range of adminFeeRanges) {
+    if (priceMmk <= range.max) {
+      return method === 'Salary Deduction' ? range.salary : range.yoma;
+    }
   }
-  return 0; // Can be expanded for other price ranges
+  return 0;
 };
 
-// Exchange rates (mock data)
+// Exchange rates
 const EXCHANGE_RATES: Record<string, number> = {
-  USD: 2100,
-  EUR: 2300,
-  SGD: 1550,
-  THB: 60,
+  FX: 5500,
+  USD: 6200,
+  EUR: 6200,
+  THB: 180,
+  SGD: 4000,
   MMK: 1,
 };
 
@@ -41,44 +61,54 @@ const LoanCalculator = () => {
   
   const [results, setResults] = useState({
     monthlyRepayment: 0,
-    totalRepayment: 0,
-    interestAmount: 0,
+    deductionAmount: 0,
     adminFee: 0,
-    interestRate: 0,
+    deductionRate: 0,
     minSalaryRequirement: 0,
   });
 
   // Update MMK price when currency or product price changes
   useEffect(() => {
     if (productPrice && !isNaN(Number(productPrice))) {
-      const converted = Number(productPrice) * EXCHANGE_RATES[currency];
+      const converted = currency === 'MMK' ? Number(productPrice) : Number(productPrice);
       setPriceMmk(converted);
     } else {
       setPriceMmk(0);
     }
   }, [productPrice, currency]);
 
+  // Helper function to round down to nearest 1000 (4 digits)
+  const roundDownToNearest1000 = (num: number): number => {
+    return Math.floor(num / 1000) * 1000;
+  };
 
-  // Calculate loan based on business rules
+  // Calculate based on new business rules
   const calculateLoan = () => {
-    if (!priceMmk || priceMmk <= 0) return;
+    if (!productPrice || isNaN(Number(productPrice)) || Number(productPrice) <= 0) return;
 
-    const principal = priceMmk;
-    const interestRate = getInterestRate(term, method);
-    const interestAmount = principal * interestRate;
-    const adminFee = getAdminFee(priceMmk, method);
-    const monthlyRepayment = (principal + interestAmount + adminFee) / term;
-    const totalRepayment = monthlyRepayment * term;
+    const productPriceMmk = Number(productPrice);
+    const currencyRate = EXCHANGE_RATES[currency];
     
-    // Minimum salary requirement: 25% of monthly repayment
-    const minSalaryRequirement = monthlyRepayment * 0.25;
+    // New calculation: (Currency Rate × Term) - Product Price (MMK)
+    const monthlyRepayment = (currencyRate * term) - productPriceMmk;
+    
+    // Minimum salary requirement: 25% of monthly repayment, rounded down to nearest 1000
+    const minSalaryRequirement = monthlyRepayment > 0 
+      ? roundDownToNearest1000(monthlyRepayment * 0.25)
+      : 0;
+    
+    // Deduction calculation
+    const deductionRate = getDeductionRate(term, method);
+    const deductionAmount = productPriceMmk * deductionRate;
+    
+    // Admin fee
+    const adminFee = getAdminFee(productPriceMmk, method);
 
     setResults({
       monthlyRepayment,
-      totalRepayment,
-      interestAmount,
+      deductionAmount,
       adminFee,
-      interestRate,
+      deductionRate,
       minSalaryRequirement,
     });
   };
@@ -149,6 +179,7 @@ const LoanCalculator = () => {
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="FX">FX</SelectItem>
                   <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
                   <SelectItem value="SGD">SGD</SelectItem>
@@ -194,63 +225,58 @@ const LoanCalculator = () => {
                 <div className="text-lg font-semibold">{term} months</div>
               </div>
               <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground">Interest Rate</Label>
-                <div className="text-lg font-semibold">{(results.interestRate * 100).toFixed(2)}%</div>
+                <Label className="text-sm text-muted-foreground">Deduction Rate</Label>
+                <div className="text-lg font-semibold">{(results.deductionRate * 100).toFixed(2)}%</div>
               </div>
             </div>
 
             <div className="space-y-3 pt-4 border-t">
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-muted-foreground">Principal Amount</Label>
-                <span className="font-semibold">{formatCurrency(priceMmk)} MMK</span>
+                <Label className="text-sm text-muted-foreground">Product Price (MMK)</Label>
+                <span className="font-semibold">{formatCurrency(Number(productPrice))} MMK</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-muted-foreground">Interest Amount</Label>
-                <span className="font-semibold">{formatCurrency(results.interestAmount)} MMK</span>
+                <Label className="text-sm text-muted-foreground">Currency Rate</Label>
+                <span className="font-semibold">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Label className="text-sm text-muted-foreground">Deduction Amount</Label>
+                <span className="font-semibold">{formatCurrency(results.deductionAmount)} MMK</span>
               </div>
               
               <div className="flex justify-between items-center">
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">Admin Fee</Label>
                   <div className="text-xs text-muted-foreground">
-                    {priceMmk <= 100000 ? 
-                      `(≤100k MMK: ${method === 'Salary Deduction' ? '5,000' : '5,300'} MMK)` : 
-                      '(No fee for >100k MMK)'
-                    }
+                    (Based on price range and method)
                   </div>
                 </div>
                 <span className="font-semibold">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
               <div className="flex justify-between items-center py-3 border-t border-b bg-primary/5 rounded-lg px-3">
-                <Label className="font-semibold">Monthly Repayment</Label>
-                <span className="text-lg font-bold text-primary">
-                  {formatCurrency(results.monthlyRepayment)} MMK
+                <div className="space-y-1">
+                  <Label className="font-semibold">Monthly Repayment</Label>
+                  <div className="text-xs text-muted-foreground">
+                    ({formatCurrency(EXCHANGE_RATES[currency])} × {term}) - {formatCurrency(Number(productPrice))}
+                  </div>
+                </div>
+                <span className={`text-lg font-bold ${results.monthlyRepayment < 0 ? 'text-destructive' : 'text-primary'}`}>
+                  {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))} MMK
                 </span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <Label className="font-semibold">Total Repayment</Label>
-                <span className="text-lg font-bold">
-                  {formatCurrency(results.totalRepayment)} MMK
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center text-sm text-muted-foreground">
-                <Label>Total Interest + Fees</Label>
-                <span>{formatCurrency(results.interestAmount + results.adminFee)} MMK</span>
               </div>
               
               <div className="flex justify-between items-center py-3 border-t bg-muted/30 rounded-lg px-3">
                 <div className="space-y-1">
                   <Label className="font-semibold text-sm">Minimum Salary Required</Label>
                   <div className="text-xs text-muted-foreground">
-                    (25% of Total Monthly Repayment)
+                    (25% of Monthly Repayment, rounded down to nearest 1000)
                   </div>
                 </div>
                 <span className="text-lg font-bold text-accent-foreground">
-                  {formatCurrency(results.minSalaryRequirement)} MMK
+                  {results.monthlyRepayment <= 0 ? 'Not Eligible' : `${formatCurrency(results.minSalaryRequirement)} MMK`}
                 </span>
               </div>
             </div>
