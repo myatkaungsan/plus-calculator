@@ -70,8 +70,8 @@ const LoanCalculator = () => {
     const monthlyRepayment = (principal + interestAmount + adminFee) / term;
     const totalRepayment = monthlyRepayment * term;
     
-    // Minimum salary requirement: 25% rule, rounded down to nearest 10,000
-    const minSalaryRequirement = Math.floor((monthlyRepayment * 0.25) / 10000) * 10000;
+    // Minimum salary requirement: 25% of monthly repayment
+    const minSalaryRequirement = monthlyRepayment * 0.25;
 
     setResults({
       monthlyRepayment,
@@ -211,7 +211,15 @@ const LoanCalculator = () => {
               </div>
               
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-muted-foreground">Admin Fee</Label>
+                <div className="space-y-1">
+                  <Label className="text-sm text-muted-foreground">Admin Fee</Label>
+                  <div className="text-xs text-muted-foreground">
+                    {priceMmk <= 100000 ? 
+                      `(≤100k MMK: ${method === 'Salary Deduction' ? '5,000' : '5,300'} MMK)` : 
+                      '(No fee for >100k MMK)'
+                    }
+                  </div>
+                </div>
                 <span className="font-semibold">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
@@ -235,7 +243,12 @@ const LoanCalculator = () => {
               </div>
               
               <div className="flex justify-between items-center py-3 border-t bg-muted/30 rounded-lg px-3">
-                <Label className="font-semibold text-sm">Minimum Salary Required</Label>
+                <div className="space-y-1">
+                  <Label className="font-semibold text-sm">Minimum Salary Required</Label>
+                  <div className="text-xs text-muted-foreground">
+                    (25% of Monthly Repayment)
+                  </div>
+                </div>
                 <span className="text-lg font-bold text-accent-foreground">
                   {formatCurrency(results.minSalaryRequirement)} MMK
                 </span>
