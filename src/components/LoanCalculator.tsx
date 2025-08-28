@@ -246,7 +246,7 @@ const LoanCalculator = () => {
                 <div className="space-y-1">
                   <Label className="font-semibold text-sm">Minimum Salary Required</Label>
                   <div className="text-xs text-muted-foreground">
-                    (25% of Monthly Repayment)
+                    (25% of Total Monthly Repayment)
                   </div>
                 </div>
                 <span className="text-lg font-bold text-accent-foreground">
