@@ -44,8 +44,7 @@ const getAdminFee = (priceMmk: number, method: string): number => {
 
 // Exchange rates
 const EXCHANGE_RATES: Record<string, number> = {
-  FX: 5500,
-  USD: 6200,
+  USD: 5500,
   EUR: 6200,
   THB: 180,
   SGD: 4000,
