@@ -77,9 +77,9 @@ const LoanCalculator = () => {
     }
   }, [productPrice, currency]);
 
-  // Helper function to round to the nearest 1000 (4 digits)
-  const roundToNearest1000 = (num: number): number => {
-    return Math.round(num / 1000) * 1000;
+  // Helper function to round down to nearest 1000 (4 digits)
+  const roundDownToNearest1000 = (num: number): number => {
+    return Math.floor(num / 1000) * 1000;
   };
 
   // Calculate based on new business rules
@@ -91,9 +91,9 @@ const LoanCalculator = () => {
     // New calculation: (Currency Rate × Term) - Product Price (MMK)
     const monthlyRepayment = (currencyRate * term) - priceMmk;
     
-    // Minimum salary requirement: 25% of monthly repayment, rounded to nearest 1000
+    // Minimum salary requirement: 25% of monthly repayment, rounded down to nearest 1000
     const minSalaryRequirement = monthlyRepayment > 0 
-      ? roundToNearest1000(monthlyRepayment * 0.25)
+      ? roundDownToNearest1000(monthlyRepayment * 0.25)
       : 0;
     
     // Deduction calculation (based on MMK price)
@@ -271,7 +271,7 @@ const LoanCalculator = () => {
                 <div className="space-y-1">
                   <Label className="font-semibold text-sm">Minimum Salary Required</Label>
                    <div className="text-xs text-muted-foreground">
-                     (25% of Monthly Repayment, rounded to nearest 1000)
+                     (25% of Monthly Repayment, rounded down to nearest 1000)
                    </div>
                 </div>
                 <span className="text-lg font-bold text-accent-foreground">
