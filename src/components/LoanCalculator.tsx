@@ -102,8 +102,8 @@ const LoanCalculator = () => {
       monthlyRepayment = numerator / denominator;
     }
     
-    // Minimum salary requirement: 25% of absolute monthly repayment, rounded down to nearest 1000
-    const minSalaryRequirement = roundDownToNearest1000(Math.abs(monthlyRepayment) * 0.25);
+    // Minimum salary = total monthly repayment - (0.25 * total monthly repayment) = 0.75 * total monthly repayment
+    const minSalaryRequirement = roundDownToNearest1000(Math.abs(monthlyRepayment) * 0.75);
     
     // Deduction calculation (based on MMK price)
     const deductionRate = getDeductionRate(term, method);
@@ -279,9 +279,9 @@ const LoanCalculator = () => {
               <div className="flex justify-between items-center py-3 border-t bg-muted/30 rounded-lg px-3">
                  <div className="space-y-1">
                    <Label className="font-semibold text-sm">Minimum Salary Required</Label>
-                    <div className="text-xs text-muted-foreground">
-                      (25% of |Monthly Repayment|, rounded down to nearest 1000)
-                    </div>
+                     <div className="text-xs text-muted-foreground">
+                       (Monthly Repayment - 25% of Monthly Repayment, rounded down to nearest 1000)
+                     </div>
                  </div>
                  <span className="text-lg font-bold text-accent-foreground">
                    {formatCurrency(results.minSalaryRequirement)} MMK
