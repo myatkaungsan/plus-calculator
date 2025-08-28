@@ -70,7 +70,7 @@ const LoanCalculator = () => {
   // Update MMK price when currency or product price changes
   useEffect(() => {
     if (productPrice && !isNaN(Number(productPrice))) {
-      const converted = currency === 'MMK' ? Number(productPrice) : Number(productPrice);
+      const converted = Number(productPrice) * EXCHANGE_RATES[currency];
       setPriceMmk(converted);
     } else {
       setPriceMmk(0);
@@ -84,25 +84,24 @@ const LoanCalculator = () => {
 
   // Calculate based on new business rules
   const calculateLoan = () => {
-    if (!productPrice || isNaN(Number(productPrice)) || Number(productPrice) <= 0) return;
+    if (!priceMmk || priceMmk <= 0) return;
 
-    const productPriceMmk = Number(productPrice);
     const currencyRate = EXCHANGE_RATES[currency];
     
     // New calculation: (Currency Rate × Term) - Product Price (MMK)
-    const monthlyRepayment = (currencyRate * term) - productPriceMmk;
+    const monthlyRepayment = (currencyRate * term) - priceMmk;
     
     // Minimum salary requirement: 25% of monthly repayment, rounded down to nearest 1000
     const minSalaryRequirement = monthlyRepayment > 0 
       ? roundDownToNearest1000(monthlyRepayment * 0.25)
       : 0;
     
-    // Deduction calculation
+    // Deduction calculation (based on MMK price)
     const deductionRate = getDeductionRate(term, method);
-    const deductionAmount = productPriceMmk * deductionRate;
+    const deductionAmount = priceMmk * deductionRate;
     
-    // Admin fee
-    const adminFee = getAdminFee(productPriceMmk, method);
+    // Admin fee (based on MMK price)
+    const adminFee = getAdminFee(priceMmk, method);
 
     setResults({
       monthlyRepayment,
@@ -233,7 +232,7 @@ const LoanCalculator = () => {
             <div className="space-y-3 pt-4 border-t">
               <div className="flex justify-between items-center">
                 <Label className="text-sm text-muted-foreground">Product Price (MMK)</Label>
-                <span className="font-semibold">{formatCurrency(Number(productPrice))} MMK</span>
+                <span className="font-semibold">{formatCurrency(priceMmk)} MMK</span>
               </div>
               
               <div className="flex justify-between items-center">
@@ -260,7 +259,7 @@ const LoanCalculator = () => {
                 <div className="space-y-1">
                   <Label className="font-semibold">Monthly Repayment</Label>
                   <div className="text-xs text-muted-foreground">
-                    ({formatCurrency(EXCHANGE_RATES[currency])} × {term}) - {formatCurrency(Number(productPrice))}
+                    ({formatCurrency(EXCHANGE_RATES[currency])} × {term}) - {formatCurrency(priceMmk)}
                   </div>
                 </div>
                 <span className={`text-lg font-bold ${results.monthlyRepayment < 0 ? 'text-destructive' : 'text-primary'}`}>
