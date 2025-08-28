@@ -271,7 +271,10 @@ const LoanCalculator = () => {
                 <div className="space-y-1">
                   <Label className="font-semibold text-sm">Minimum Salary Required</Label>
                    <div className="text-xs text-muted-foreground">
-                     (25% of Monthly Repayment, rounded down to nearest 1000)
+                     {results.monthlyRepayment <= 0 
+                       ? 'Not eligible when monthly repayment is negative or zero'
+                       : '(25% of Monthly Repayment, rounded down to nearest 1000)'
+                     }
                    </div>
                 </div>
                 <span className="text-lg font-bold text-accent-foreground">
