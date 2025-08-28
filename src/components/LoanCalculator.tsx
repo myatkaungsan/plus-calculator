@@ -91,10 +91,8 @@ const LoanCalculator = () => {
     // New calculation: (Currency Rate × Term) - Product Price (MMK)
     const monthlyRepayment = (currencyRate * term) - priceMmk;
     
-    // Minimum salary requirement: 25% of monthly repayment, rounded down to nearest 1000
-    const minSalaryRequirement = monthlyRepayment > 0 
-      ? roundDownToNearest1000(monthlyRepayment * 0.25)
-      : 0;
+    // Minimum salary requirement: 25% of absolute monthly repayment, rounded down to nearest 1000
+    const minSalaryRequirement = roundDownToNearest1000(Math.abs(monthlyRepayment) * 0.25);
     
     // Deduction calculation (based on MMK price)
     const deductionRate = getDeductionRate(term, method);
@@ -268,18 +266,15 @@ const LoanCalculator = () => {
               </div>
               
               <div className="flex justify-between items-center py-3 border-t bg-muted/30 rounded-lg px-3">
-                <div className="space-y-1">
-                  <Label className="font-semibold text-sm">Minimum Salary Required</Label>
-                   <div className="text-xs text-muted-foreground">
-                     {results.monthlyRepayment <= 0 
-                       ? 'Not eligible when monthly repayment is negative or zero'
-                       : '(25% of Monthly Repayment, rounded down to nearest 1000)'
-                     }
-                   </div>
-                </div>
-                <span className="text-lg font-bold text-accent-foreground">
-                  {results.monthlyRepayment <= 0 ? 'Not Eligible' : `${formatCurrency(results.minSalaryRequirement)} MMK`}
-                </span>
+                 <div className="space-y-1">
+                   <Label className="font-semibold text-sm">Minimum Salary Required</Label>
+                    <div className="text-xs text-muted-foreground">
+                      (25% of |Monthly Repayment|, rounded down to nearest 1000)
+                    </div>
+                 </div>
+                 <span className="text-lg font-bold text-accent-foreground">
+                   {formatCurrency(results.minSalaryRequirement)} MMK
+                 </span>
               </div>
             </div>
           </CardContent>
