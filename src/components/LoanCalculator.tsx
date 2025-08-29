@@ -219,13 +219,6 @@ const LoanCalculator = () => {
                 </span>
               </div>
             </div>
-
-            {/* Calculate Button */}
-            <div className="pt-4">
-              <button className="glass-button w-full py-4 px-6 text-lg font-bold">
-                Calculate Loan
-              </button>
-            </div>
           </CardContent>
         </Card>
 
