@@ -101,8 +101,8 @@ const LoanCalculator = () => {
       monthlyRepayment = numerator / denominator;
     }
     
-    // Minimum salary = 25% of product price
-    const minSalaryRequirement = roundDownToNearest1000(priceMmk * 0.25);
+    // Minimum salary = monthly repayment / 0.25
+    const minSalaryRequirement = roundDownToNearest1000(monthlyRepayment / 0.25);
     
     // Deduction calculation (based on MMK price)
     const deductionRate = getDeductionRate(term, method);
@@ -286,7 +286,7 @@ const LoanCalculator = () => {
                   <div className="space-y-2">
                     <Label className="font-bold text-lg text-white">Minimum Salary Required</Label>
                     <div className="text-sm text-white/70">
-                      (25% of Product Price, rounded down to nearest 1000)
+                      (Monthly Repayment ÷ 0.25, rounded down to nearest 1000)
                     </div>
                   </div>
                   <span className="text-3xl font-bold text-white">
