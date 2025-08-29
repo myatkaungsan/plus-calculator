@@ -151,68 +151,68 @@ const LoanCalculator = () => {
           <CardContent className="space-y-6">
             {/* Term Selection */}
             <div className="space-y-3">
-              <Label htmlFor="term" className="text-sm font-semibold text-foreground/90">Choose Term</Label>
+              <Label htmlFor="term" className="text-sm font-semibold text-white">Choose Term</Label>
               <Select value={term.toString()} onValueChange={(value) => setTerm(Number(value))}>
-                <SelectTrigger className="glass-input h-12 text-base">
+                <SelectTrigger className="glass-input h-12 text-base text-white">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  <SelectItem value="3" className="text-base py-3">3 months</SelectItem>
-                  <SelectItem value="6" className="text-base py-3">6 months</SelectItem>
-                  <SelectItem value="9" className="text-base py-3">9 months</SelectItem>
-                  <SelectItem value="12" className="text-base py-3">12 months</SelectItem>
+                  <SelectItem value="3" className="text-base py-3 text-white">3 months</SelectItem>
+                  <SelectItem value="6" className="text-base py-3 text-white">6 months</SelectItem>
+                  <SelectItem value="9" className="text-base py-3 text-white">9 months</SelectItem>
+                  <SelectItem value="12" className="text-base py-3 text-white">12 months</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Repayment Method */}
             <div className="space-y-3">
-              <Label htmlFor="method" className="text-sm font-semibold text-foreground/90">Choose Monthly Repayment Method</Label>
+              <Label htmlFor="method" className="text-sm font-semibold text-white">Choose Monthly Repayment Method</Label>
               <Select value={method} onValueChange={setMethod}>
-                <SelectTrigger className="glass-input h-12 text-base">
+                <SelectTrigger className="glass-input h-12 text-base text-white">
                   <SelectValue placeholder="Select method" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  <SelectItem value="Salary Deduction" className="text-base py-3">Salary Deduction</SelectItem>
-                  <SelectItem value="Yoma Bank Deduction" className="text-base py-3">Yoma Bank Deduction</SelectItem>
+                  <SelectItem value="Salary Deduction" className="text-base py-3 text-white">Salary Deduction</SelectItem>
+                  <SelectItem value="Yoma Bank Deduction" className="text-base py-3 text-white">Yoma Bank Deduction</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Currency */}
             <div className="space-y-3">
-              <Label htmlFor="currency" className="text-sm font-semibold text-foreground/90">Currency</Label>
+              <Label htmlFor="currency" className="text-sm font-semibold text-white">Currency</Label>
               <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger className="glass-input h-12 text-base">
+                <SelectTrigger className="glass-input h-12 text-base text-white">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  <SelectItem value="FX" className="text-base py-3">FX</SelectItem>
-                  <SelectItem value="USD" className="text-base py-3">USD</SelectItem>
-                  <SelectItem value="EUR" className="text-base py-3">EUR</SelectItem>
-                  <SelectItem value="SGD" className="text-base py-3">SGD</SelectItem>
-                  <SelectItem value="THB" className="text-base py-3">THB</SelectItem>
-                  <SelectItem value="MMK" className="text-base py-3">MMK</SelectItem>
+                  <SelectItem value="FX" className="text-base py-3 text-white">FX</SelectItem>
+                  <SelectItem value="USD" className="text-base py-3 text-white">USD</SelectItem>
+                  <SelectItem value="EUR" className="text-base py-3 text-white">EUR</SelectItem>
+                  <SelectItem value="SGD" className="text-base py-3 text-white">SGD</SelectItem>
+                  <SelectItem value="THB" className="text-base py-3 text-white">THB</SelectItem>
+                  <SelectItem value="MMK" className="text-base py-3 text-white">MMK</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Product Price */}
             <div className="space-y-3">
-              <Label htmlFor="price" className="text-sm font-semibold text-foreground/90">Product Price in {currency}</Label>
+              <Label htmlFor="price" className="text-sm font-semibold text-white">Product Price in {currency}</Label>
               <Input
                 id="price"
                 type="number"
                 placeholder="Enter product price"
                 value={productPrice}
                 onChange={(e) => setProductPrice(e.target.value)}
-                className="glass-input h-12 text-base placeholder:text-muted-foreground/60"
+                className="glass-input h-12 text-base placeholder:text-white/60 text-white"
               />
             </div>
 
             {/* Price in MMK (Auto-calculated) */}
             <div className="space-y-3">
-              <Label className="text-sm font-semibold text-foreground/90">Price in MMK</Label>
+              <Label className="text-sm font-semibold text-white">Price in MMK</Label>
               <div className="glass-input p-4 bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20">
                 <span className="text-lg font-bold text-white">
                   {formatCurrency(priceMmk)} MMK
@@ -232,46 +232,46 @@ const LoanCalculator = () => {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="glass-input p-4 text-center">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Term</Label>
-                <div className="text-xl font-bold text-primary mt-1">{term} months</div>
+                <Label className="text-xs font-semibold text-white uppercase tracking-wider">Term</Label>
+                <div className="text-xl font-bold text-white mt-1">{term} months</div>
               </div>
               <div className="glass-input p-4 text-center">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Deduction Rate</Label>
-                <div className="text-xl font-bold text-secondary mt-1">{(results.deductionRate * 100).toFixed(2)}%</div>
+                <Label className="text-xs font-semibold text-white uppercase tracking-wider">Deduction Rate</Label>
+                <div className="text-xl font-bold text-white mt-1">{(results.deductionRate * 100).toFixed(2)}%</div>
               </div>
             </div>
 
             <div className="space-y-4 pt-2">
               <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <Label className="text-sm font-semibold text-foreground/80">Product Price (MMK)</Label>
-                <span className="font-bold text-lg">{formatCurrency(priceMmk)} MMK</span>
+                <Label className="text-sm font-semibold text-white">Product Price (MMK)</Label>
+                <span className="font-bold text-lg text-white">{formatCurrency(priceMmk)} MMK</span>
               </div>
               
               <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <Label className="text-sm font-semibold text-foreground/80">Currency Rate</Label>
-                <span className="font-bold text-lg">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
+                <Label className="text-sm font-semibold text-white">Currency Rate</Label>
+                <span className="font-bold text-lg text-white">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
               </div>
               
               <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <Label className="text-sm font-semibold text-foreground/80">Deduction Amount</Label>
-                <span className="font-bold text-lg">{formatCurrency(results.deductionAmount)} MMK</span>
+                <Label className="text-sm font-semibold text-white">Deduction Amount</Label>
+                <span className="font-bold text-lg text-white">{formatCurrency(results.deductionAmount)} MMK</span>
               </div>
               
               <div className="glass-input p-4 flex justify-between items-center hover-scale">
                 <div className="space-y-1">
-                  <Label className="text-sm font-semibold text-foreground/80">Admin Fee</Label>
-                  <div className="text-xs text-muted-foreground">
+                  <Label className="text-sm font-semibold text-white">Admin Fee</Label>
+                  <div className="text-xs text-white/60">
                     (Based on price range and method)
                   </div>
                 </div>
-                <span className="font-bold text-lg">{formatCurrency(results.adminFee)} MMK</span>
+                <span className="font-bold text-lg text-white">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
               <div className="glass-input p-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30 hover-scale">
                 <div className="flex justify-between items-center">
                   <div className="space-y-1">
-                    <Label className="font-bold text-base text-primary">Monthly Repayment</Label>
-                    <div className="text-xs text-muted-foreground">
+                    <Label className="font-bold text-base text-white">Monthly Repayment</Label>
+                    <div className="text-xs text-white/60">
                       PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate
                     </div>
                   </div>
@@ -284,8 +284,8 @@ const LoanCalculator = () => {
               <div className="glass-input p-5 bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/30 hover-scale">
                 <div className="flex justify-between items-center">
                   <div className="space-y-1">
-                    <Label className="font-bold text-base text-secondary">Minimum Salary Required</Label>
-                    <div className="text-xs text-muted-foreground">
+                    <Label className="font-bold text-base text-white">Minimum Salary Required</Label>
+                    <div className="text-xs text-white/60">
                       (25% of Product Price, rounded down to nearest 1000)
                     </div>
                   </div>
