@@ -261,7 +261,7 @@ const LoanCalculator = () => {
                 <div className="space-y-1">
                   <Label className="text-sm font-semibold text-white">Admin Fee</Label>
                   <div className="text-xs text-white/60">
-                    (Based on price range and method)
+                    {/* (Based on price range and method) */}
                   </div>
                 </div>
                 <span className="font-bold text-lg text-white">{formatCurrency(results.adminFee)} MMK</span>
