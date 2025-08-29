@@ -41,20 +41,20 @@ All colors MUST be HSL.
     /* Calculator specific colors */
     --calc-display: 240 8% 12%;
     --calc-number: 240 6% 18%;
-    --calc-operator: 28 100% 52%;
-    --calc-operator-hover: 28 100% 58%;
-    --calc-function: 240 5% 25%;
-    --calc-equals: 28 100% 52%;
+    --calc-operator: 237 58% 35%;
+    --calc-operator-hover: 237 58% 40%;
+    --calc-function: 28 100% 47%;
+    --calc-equals: 237 58% 35%;
     
     /* Gradients */
-    --gradient-main: linear-gradient(135deg, hsl(240 10% 8%), hsl(240 8% 12%));
-    --gradient-button: linear-gradient(135deg, hsl(240 6% 18%), hsl(240 6% 16%));
-    --gradient-operator: linear-gradient(135deg, hsl(28 100% 52%), hsl(28 100% 48%));
+    --gradient-main: linear-gradient(135deg, hsl(237 58% 35%), hsl(28 100% 47%));
+    --gradient-button: linear-gradient(135deg, hsl(237 58% 35%), hsl(237 58% 30%));
+    --gradient-operator: linear-gradient(135deg, hsl(28 100% 47%), hsl(28 100% 42%));
     
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(240 10% 4% / 0.5);
-    --shadow-button: 0 2px 8px -2px hsl(240 10% 4% / 0.3);
-    --shadow-glow: 0 0 20px hsl(28 100% 52% / 0.3);
+    --shadow-soft: 0 4px 20px -4px hsl(237 58% 20% / 0.5);
+    --shadow-button: 0 2px 8px -2px hsl(237 58% 20% / 0.3);
+    --shadow-glow: 0 0 20px hsl(28 100% 47% / 0.3);
 
     --radius: 1rem;
 
