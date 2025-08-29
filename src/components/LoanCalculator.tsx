@@ -144,7 +144,7 @@ const LoanCalculator = () => {
         {/* Input Form */}
         <Card className="glass-card border-0 animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <CardTitle className="text-xl font-bold gradient-text">
               Loan Configuration
             </CardTitle>
           </CardHeader>
@@ -214,7 +214,7 @@ const LoanCalculator = () => {
             <div className="space-y-3">
               <Label className="text-sm font-semibold text-foreground/90">Price in MMK</Label>
               <div className="glass-input p-4 bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20">
-                <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                <span className="text-lg font-bold gradient-text">
                   {formatCurrency(priceMmk)} MMK
                 </span>
               </div>
@@ -225,7 +225,7 @@ const LoanCalculator = () => {
         {/* Results */}
         <Card className="glass-card border-0 animate-fade-in animation-delay-200">
           <CardHeader>
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <CardTitle className="text-xl font-bold gradient-text">
               Calculation Results
             </CardTitle>
           </CardHeader>
@@ -275,7 +275,7 @@ const LoanCalculator = () => {
                       PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate
                     </div>
                   </div>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <span className="text-2xl font-bold gradient-text-primary">
                     {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))} MMK
                   </span>
                 </div>
@@ -289,7 +289,7 @@ const LoanCalculator = () => {
                       (25% of Product Price, rounded down to nearest 1000)
                     </div>
                   </div>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                  <span className="text-2xl font-bold gradient-text-secondary">
                     {formatCurrency(results.minSalaryRequirement)} MMK
                   </span>
                 </div>
