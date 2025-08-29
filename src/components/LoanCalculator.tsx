@@ -187,7 +187,7 @@ const LoanCalculator = () => {
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  <SelectItem value="FX" className="text-base py-3 text-white">FX</SelectItem>
+                  {/* <SelectItem value="FX" className="text-base py-3 text-white">FX</SelectItem> */}
                   <SelectItem value="USD" className="text-base py-3 text-white">USD</SelectItem>
                   <SelectItem value="EUR" className="text-base py-3 text-white">EUR</SelectItem>
                   <SelectItem value="SGD" className="text-base py-3 text-white">SGD</SelectItem>
@@ -252,10 +252,10 @@ const LoanCalculator = () => {
                 <span className="font-bold text-lg text-white">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
               </div>
               
-              {/* <div className="glass-input p-4 flex justify-between items-center hover-scale">
+              <div className="glass-input p-4 flex justify-between items-center hover-scale">
                 <Label className="text-sm font-semibold text-white">Deduction Amount</Label>
                 <span className="font-bold text-lg text-white">{formatCurrency(results.deductionAmount)} MMK</span>
-              </div> */}
+              </div>
               
               <div className="glass-input p-4 flex justify-between items-center hover-scale">
                 <div className="space-y-1">
