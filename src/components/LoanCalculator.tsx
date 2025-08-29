@@ -252,10 +252,10 @@ const LoanCalculator = () => {
                 <span className="font-bold text-lg text-white">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
               </div>
               
-              <div className="glass-input p-4 flex justify-between items-center hover-scale">
+              {/* <div className="glass-input p-4 flex justify-between items-center hover-scale">
                 <Label className="text-sm font-semibold text-white">Deduction Amount</Label>
                 <span className="font-bold text-lg text-white">{formatCurrency(results.deductionAmount)} MMK</span>
-              </div>
+              </div> */}
               
               <div className="glass-input p-4 flex justify-between items-center hover-scale">
                 <div className="space-y-1">
