@@ -142,9 +142,9 @@ const LoanCalculator = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Form */}
-        <Card className="glass-card border-0 animate-fade-in">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold text-white">
+        <Card className="glass-card border-0 animate-fade-in animation-delay-200">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-2xl font-bold text-white text-center">
               Loan Configuration
             </CardTitle>
           </CardHeader>
@@ -213,19 +213,26 @@ const LoanCalculator = () => {
             {/* Price in MMK (Auto-calculated) */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold text-white">Price in MMK</Label>
-              <div className="glass-input p-4 bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20">
+              <div className="glass-input p-4 bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover-scale">
                 <span className="text-lg font-bold text-white">
                   {formatCurrency(priceMmk)} MMK
                 </span>
               </div>
             </div>
+
+            {/* Calculate Button */}
+            <div className="pt-4">
+              <button className="glass-button w-full py-4 px-6 text-lg font-bold">
+                Calculate Loan
+              </button>
+            </div>
           </CardContent>
         </Card>
 
         {/* Results */}
-        <Card className="glass-card border-0 animate-fade-in animation-delay-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold text-white">
+        <Card className="glass-card border-0 animate-fade-in animation-delay-400">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-2xl font-bold text-white text-center">
               Calculation Results
             </CardTitle>
           </CardHeader>
@@ -267,29 +274,29 @@ const LoanCalculator = () => {
                 <span className="font-bold text-lg text-white">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
-              <div className="glass-input p-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30 hover-scale">
+              <div className="glass-input p-6 bg-gradient-to-r from-white/15 to-white/10 border border-white/40 hover-scale">
                 <div className="flex justify-between items-center">
-                  <div className="space-y-1">
-                    <Label className="font-bold text-base text-white">Monthly Repayment</Label>
-                    <div className="text-xs text-white/60">
+                  <div className="space-y-2">
+                    <Label className="font-bold text-lg text-white">Monthly Repayment</Label>
+                    <div className="text-sm text-white/70">
                       PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate
                     </div>
                   </div>
-                  <span className="text-2xl font-bold text-white">
+                  <span className="text-3xl font-bold text-white">
                     {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))} MMK
                   </span>
                 </div>
               </div>
               
-              <div className="glass-input p-5 bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/30 hover-scale">
+              <div className="glass-input p-6 bg-gradient-to-r from-white/10 to-white/15 border border-white/40 hover-scale">
                 <div className="flex justify-between items-center">
-                  <div className="space-y-1">
-                    <Label className="font-bold text-base text-white">Minimum Salary Required</Label>
-                    <div className="text-xs text-white/60">
+                  <div className="space-y-2">
+                    <Label className="font-bold text-lg text-white">Minimum Salary Required</Label>
+                    <div className="text-sm text-white/70">
                       (25% of Product Price, rounded down to nearest 1000)
                     </div>
                   </div>
-                  <span className="text-2xl font-bold text-white">
+                  <span className="text-3xl font-bold text-white">
                     {formatCurrency(results.minSalaryRequirement)} MMK
                   </span>
                 </div>
