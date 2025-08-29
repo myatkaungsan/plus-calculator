@@ -211,14 +211,14 @@ const LoanCalculator = () => {
             </div>
 
             {/* Price in MMK (Auto-calculated) */}
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <Label className="text-sm font-semibold text-white">Price in MMK</Label>
               <div className="glass-input p-4 bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover-scale">
                 <span className="text-lg font-bold text-white">
                   {formatCurrency(priceMmk)} MMK
                 </span>
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
