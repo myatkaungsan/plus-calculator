@@ -272,7 +272,7 @@ const LoanCalculator = () => {
                   <div className="space-y-2">
                     <Label className="font-bold text-lg text-white">Monthly Repayment</Label>
                     <div className="text-sm text-white/70">
-                      PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate
+                      {/* PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate */}
                     </div>
                   </div>
                   <span className="text-3xl font-bold text-white">
@@ -286,7 +286,7 @@ const LoanCalculator = () => {
                   <div className="space-y-2">
                     <Label className="font-bold text-lg text-white">Minimum Salary Required</Label>
                     <div className="text-sm text-white/70">
-                      (Monthly Repayment ÷ 0.25, rounded down to nearest 1000)
+                      {/* (Monthly Repayment ÷ 0.25, rounded down to nearest 1000) */}
                     </div>
                   </div>
                   <span className="text-3xl font-bold text-white">
