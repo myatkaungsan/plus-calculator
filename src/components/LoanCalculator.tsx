@@ -229,7 +229,7 @@ const LoanCalculator = () => {
             </div>
 
             {/* Deposit Amount */}
-            {/* <div className="space-y-3">
+            <div className="space-y-3">
               <Label htmlFor="deposit" className="text-sm font-semibold text-white">Deposit Amount in {currency}</Label>
               <Input
                 id="deposit"
@@ -239,7 +239,7 @@ const LoanCalculator = () => {
                 onChange={(e) => setDepositAmount(e.target.value)}
                 className="glass-input h-12 text-base placeholder:text-white/60 text-white"
               />
-            </div> */}
+            </div>
 
             {/* Price in MMK (Auto-calculated) */}
             {/* <div className="space-y-3">
