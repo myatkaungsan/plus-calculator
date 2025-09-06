@@ -56,7 +56,9 @@ const LoanCalculator = () => {
   const [method, setMethod] = useState<string>('Salary Deduction');
   const [currency, setCurrency] = useState<string>('USD');
   const [productPrice, setProductPrice] = useState<string>('');
+  const [depositAmount, setDepositAmount] = useState<string>('');
   const [priceMmk, setPriceMmk] = useState<number>(0);
+  const [depositMmk, setDepositMmk] = useState<number>(0);
   
   const [results, setResults] = useState({
     monthlyRepayment: 0,
@@ -76,12 +78,22 @@ const LoanCalculator = () => {
     }
   }, [productPrice, currency]);
 
+  // Update MMK deposit when currency or deposit amount changes
+  useEffect(() => {
+    if (depositAmount && !isNaN(Number(depositAmount))) {
+      const converted = Number(depositAmount) * EXCHANGE_RATES[currency];
+      setDepositMmk(converted);
+    } else {
+      setDepositMmk(0);
+    }
+  }, [depositAmount, currency]);
+
   // Helper function to round down to nearest 1000 (4 digits)
   const roundDownToNearest1000 = (num: number): number => {
     return Math.floor(num / 1000) * 1000;
   };
 
-  // Calculate based on PMT formula
+  // Calculate based on new formula
   const calculateLoan = () => {
     if (!priceMmk || priceMmk <= 0) return;
 
@@ -89,17 +101,23 @@ const LoanCalculator = () => {
     const annualRate = getDeductionRate(term, method);
     const monthlyRate = annualRate / 12;
     
-    // PMT formula: [P × r × (1 + r)^n] / [(1 + r)^n - 1]
-    // Where P = principal, r = monthly rate, n = number of payments
+    // New formula: Monthly repayment = (product_price - deposit_amount) * int_rate_price / (1 - ((1 + int_rate_price))^(-1 * term))
+    // Where: product_price = priceMmk, deposit_amount = depositMmk, int_rate_price = monthlyRate, term = number of months
     let monthlyRepayment;
+    const principal = priceMmk - depositMmk;
+    
     if (monthlyRate === 0) {
       // If no interest, just divide principal by term
-      monthlyRepayment = priceMmk / term;
+      monthlyRepayment = principal / term;
     } else {
-      const numerator = priceMmk * monthlyRate * Math.pow(1 + monthlyRate, term);
-      const denominator = Math.pow(1 + monthlyRate, term) - 1;
-      monthlyRepayment = numerator / denominator;
+      const denominator = 1 - Math.pow(1 + monthlyRate, -1 * term);
+      monthlyRepayment = (principal * monthlyRate) / denominator;
     }
+    
+    // Previous PMT formula (commented out):
+    // const numerator = priceMmk * monthlyRate * Math.pow(1 + monthlyRate, term);
+    // const denominator = Math.pow(1 + monthlyRate, term) - 1;
+    // monthlyRepayment = numerator / denominator;
     
     // Minimum salary = monthly repayment / 0.25
     const minSalaryRequirement = roundDownToNearest1000(monthlyRepayment / 0.25);
@@ -123,7 +141,7 @@ const LoanCalculator = () => {
   // Auto-calculate when inputs change
   useEffect(() => {
     calculateLoan();
-  }, [term, method, priceMmk]);
+  }, [term, method, priceMmk, depositMmk]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -206,6 +224,19 @@ const LoanCalculator = () => {
                 placeholder="Enter product price"
                 value={productPrice}
                 onChange={(e) => setProductPrice(e.target.value)}
+                className="glass-input h-12 text-base placeholder:text-white/60 text-white"
+              />
+            </div>
+
+            {/* Deposit Amount */}
+            <div className="space-y-3">
+              <Label htmlFor="deposit" className="text-sm font-semibold text-white">Deposit Amount in {currency}</Label>
+              <Input
+                id="deposit"
+                type="number"
+                placeholder="Enter deposit amount"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
                 className="glass-input h-12 text-base placeholder:text-white/60 text-white"
               />
             </div>
