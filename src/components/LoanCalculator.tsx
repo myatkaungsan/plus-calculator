@@ -99,7 +99,7 @@ const LoanCalculator = () => {
 
     // Get annual interest rate and convert to monthly
     const annualRate = getDeductionRate(term, method);
-    const monthlyRate = annualRate / 100;
+    const monthlyRate = annualRate / 12;
     
     // New formula: Monthly repayment = (product_price - deposit_amount) * int_rate_price / (1 - ((1 + int_rate_price))^(-1 * term))
     // Where: product_price = priceMmk, deposit_amount = depositMmk, int_rate_price = monthlyRate, term = number of months
@@ -110,7 +110,7 @@ const LoanCalculator = () => {
       // If no interest, just divide principal by term
       monthlyRepayment = principal / term;
     } else {
-      const denominator = (1-((1+monthlyRate)^(-1*term));
+      const denominator = 1 - Math.pow(1 + monthlyRate, -1 * term);
       monthlyRepayment = (principal * monthlyRate) / denominator;
     }
     
@@ -268,7 +268,7 @@ const LoanCalculator = () => {
               </div>
               <div className="glass-input p-4 text-center">
                 <Label className="text-xs font-semibold text-white uppercase tracking-wider">Deduction Rate</Label>
-                <div className="text-xl font-bold text-white mt-1">{(results.deductionRate * 100).toFixed(0)}%</div>
+                <div className="text-xl font-bold text-white mt-1">{(results.deductionRate * 100).toFixed(2)}%</div>
               </div>
             </div>
 
@@ -311,7 +311,6 @@ const LoanCalculator = () => {
                   </span>
                 </div>
               </div>
-              
               
               <div className="glass-input p-6 bg-gradient-to-r from-white/10 to-white/15 border border-white/40 hover-scale">
                 <div className="flex justify-between items-center">
