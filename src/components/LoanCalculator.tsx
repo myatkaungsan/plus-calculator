@@ -306,9 +306,9 @@ const LoanCalculator = () => {
                       {/* PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate */}
                     </div>
                   </div>
-                  <span className="text-3xl font-bold text-white">
+                  {/* <span className="text-3xl font-bold text-white">
                     {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))} MMK
-                  </span>
+                  </span> */}
                 </div>
               </div>
               
