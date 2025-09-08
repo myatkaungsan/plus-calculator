@@ -298,17 +298,7 @@ const LoanCalculator = () => {
                 <span className="font-bold text-lg text-white">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
-              <div className="glass-input p-6 bg-gradient-to-r from-white/15 to-white/10 border border-white/40 hover-scale">
-                <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <Label className="font-bold text-lg text-white">Monthly Repayment</Label>
-                    <div className="text-sm text-white/70">
-                      {/* PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate */}
-                    </div>
-                  </div>
-                  
-                </div>
-              </div>
+              
               
               <div className="glass-input p-6 bg-gradient-to-r from-white/10 to-white/15 border border-white/40 hover-scale">
                 <div className="flex justify-between items-center">
