@@ -110,7 +110,7 @@ const LoanCalculator = () => {
       // If no interest, just divide principal by term
       monthlyRepayment = principal / term;
     } else {
-      const denominator = 1 - Math.pow(1 + monthlyRate, -1 * term);
+      const denominator = (1-((1+monthlyRate)^(-1*term));
       monthlyRepayment = (principal * monthlyRate) / denominator;
     }
     
