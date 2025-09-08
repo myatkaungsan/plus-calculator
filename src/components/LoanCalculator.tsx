@@ -268,7 +268,7 @@ const LoanCalculator = () => {
               </div>
               <div className="glass-input p-4 text-center">
                 <Label className="text-xs font-semibold text-white uppercase tracking-wider">Deduction Rate</Label>
-                <div className="text-xl font-bold text-white mt-1">{(results.deductionRate * 100).toFixed(2)}%</div>
+                <div className="text-xl font-bold text-white mt-1">{(results.deductionRate * 100).toFixed(0)}%</div>
               </div>
             </div>
 
