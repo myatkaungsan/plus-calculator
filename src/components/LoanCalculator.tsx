@@ -99,7 +99,7 @@ const LoanCalculator = () => {
 
     // Get annual interest rate and convert to monthly
     const annualRate = getDeductionRate(term, method);
-    const monthlyRate = annualRate / 100;
+    const monthlyRate = annualRate / 12;
     
     // New formula: Monthly repayment = (product_price - deposit_amount) * int_rate_price / (1 - ((1 + int_rate_price))^(-1 * term))
     // Where: product_price = priceMmk, deposit_amount = depositMmk, int_rate_price = monthlyRate, term = number of months
