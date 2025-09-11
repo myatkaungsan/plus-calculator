@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Business rules for deduction rates
+// Business rules for deduction rates (update)
 const getDeductionRate = (term: number, method: string): number => {
   if (term >= 3 && term <= 6) {
     return method === 'Salary Deduction' ? 0.0376 : 0.041;
