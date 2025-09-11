@@ -93,45 +93,37 @@ const LoanCalculator = () => {
     return Math.floor(num / 1000) * 1000;
   };
 
+  const pmt = (rate: number, nper: number, pv: number) => {
+  // rate should be a decimal per-period rate (e.g. 0.0376)
+  if (nper === 0) return 0;
+  if (rate === 0) return pv / nper;
+  return (pv * rate) / (1 - Math.pow(1 + rate, -nper));
+};
+
+
   // Calculate based on new formula
   const calculateLoan = () => {
-    if (!priceMmk || priceMmk <= 0) return;
-
-    // Get annual interest rate and convert to monthly
-    const annualRate = getDeductionRate(term, method);
-    const monthlyRate = annualRate / 12;
-    
-    // New formula: Monthly repayment = (product_price - deposit_amount) * int_rate_price / (1 - ((1 + int_rate_price))^(-1 * term))
-    // Where: product_price = priceMmk, deposit_amount = depositMmk, int_rate_price = monthlyRate, term = number of months
-    let monthlyRepayment;
-    const principal = priceMmk - depositMmk;
-    
-    if (monthlyRate === 0) {
-      // If no interest, just divide principal by term
-      monthlyRepayment = principal / term;
-    } else {
-      const denominator = 1 - Math.pow(1 + monthlyRate, -1 * term);
-      monthlyRepayment = (principal * monthlyRate) / denominator;
+    if (!priceMmk || priceMmk <= 0) {
+      setResults((r) => ({ ...r, monthlyRepayment: 0, deductionAmount: 0, adminFee: 0, deductionRate: 0, minSalaryRequirement: 0 }));
+      return;
     }
-    
-    // Previous PMT formula (commented out):
-    // const numerator = priceMmk * monthlyRate * Math.pow(1 + monthlyRate, term);
-    // const denominator = Math.pow(1 + monthlyRate, term) - 1;
-    // monthlyRepayment = numerator / denominator;
-    
-    // Minimum salary = monthly repayment / 0.25
-    const minSalaryRequirement = roundDownToNearest1000(monthlyRepayment / 0.25);
-    
-    // Deduction calculation (based on MMK price)
-    const deductionRate = getDeductionRate(term, method);
-    const deductionAmount = priceMmk * deductionRate;
-    
-    // Admin fee (based on MMK price)
+
     const adminFee = getAdminFee(priceMmk, method);
+    const principal = Math.max(0, priceMmk - depositMmk); // amount to finance
+    const deductionRate = getDeductionRate(term, method); // decimal per-period rate
+
+    // Use PMT for both methods (user requested PMT for both)
+    const monthlyRepayment = pmt(deductionRate, term, principal);
+
+    const totalPaid = monthlyRepayment * term;
+    // total interest (excluding admin fee) = totalPaid - principal - adminFee
+    const totalInterest = Math.max(0, totalPaid - principal - adminFee);
+
+    const minSalaryRequirement = roundDownToNearest1000(monthlyRepayment / 0.25);
 
     setResults({
       monthlyRepayment,
-      deductionAmount,
+      deductionAmount: totalInterest,
       adminFee,
       deductionRate,
       minSalaryRequirement,
@@ -145,87 +137,99 @@ const LoanCalculator = () => {
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-foreground mb-2">PLUS+ Calculator</h1>
-        <p className="text-muted-foreground">Loan calculation for product financing</p>
+      <div className="text-center glass-card animate-fade-in">
+        <h1 className="text-4xl font-bold text-foreground mb-4">PLUS+ Calculator</h1>
+        <p className="text-muted-foreground text-lg">Advanced loan calculation for product financing</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Input Form */}
-        <Card className="glass-card border-0 animate-fade-in animation-delay-200">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-2xl font-bold text-white text-center">
+        <Card className="glass-card border-0 animate-fade-in animation-delay-200 hover-scale">
+          <CardHeader className="pb-6 text-center">
+            <CardTitle className="text-2xl font-bold text-foreground">
               Loan Configuration
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-8">
             {/* Term Selection */}
-            <div className="space-y-3">
-              <Label htmlFor="term" className="text-sm font-semibold text-white">Choose Term</Label>
+            <div className="space-y-4 group">
+              <Label htmlFor="term" className="text-sm font-semibold text-foreground">
+                Choose Term
+              </Label>
               <Select value={term.toString()} onValueChange={(value) => setTerm(Number(value))}>
-                <SelectTrigger className="glass-input h-12 text-base text-white">
+                <SelectTrigger className="glass-input h-14 text-base text-foreground border-2 border-transparent hover:border-primary/30 transition-all duration-300">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
-                <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  <SelectItem value="3" className="text-base py-3 text-white">3 months</SelectItem>
-                  <SelectItem value="6" className="text-base py-3 text-white">6 months</SelectItem>
-                  <SelectItem value="9" className="text-base py-3 text-white">9 months</SelectItem>
-                  <SelectItem value="12" className="text-base py-3 text-white">12 months</SelectItem>
+                <SelectContent className="glass-card border-0 backdrop-blur-xl shadow-2xl">
+                  <SelectItem value="3" className="text-base py-4 text-foreground hover:bg-primary/10 rounded-lg m-1">3 months</SelectItem>
+                  <SelectItem value="6" className="text-base py-4 text-foreground hover:bg-primary/10 rounded-lg m-1">6 months</SelectItem>
+                  <SelectItem value="9" className="text-base py-4 text-foreground hover:bg-primary/10 rounded-lg m-1">9 months</SelectItem>
+                  <SelectItem value="12" className="text-base py-4 text-foreground hover:bg-primary/10 rounded-lg m-1">12 months</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Repayment Method */}
-            <div className="space-y-3">
-              <Label htmlFor="method" className="text-sm font-semibold text-white">Choose Monthly Repayment Method</Label>
+            <div className="space-y-4 group">
+              <Label htmlFor="method" className="text-sm font-semibold text-foreground">
+                Choose Monthly Repayment Method
+              </Label>
               <Select value={method} onValueChange={setMethod}>
-                <SelectTrigger className="glass-input h-12 text-base text-white">
+                <SelectTrigger className="glass-input h-14 text-base text-foreground border-2 border-transparent hover:border-secondary/30 transition-all duration-300">
                   <SelectValue placeholder="Select method" />
                 </SelectTrigger>
-                <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  <SelectItem value="Salary Deduction" className="text-base py-3 text-white">Salary Deduction</SelectItem>
-                  <SelectItem value="Yoma Bank Deduction" className="text-base py-3 text-white">Yoma Bank Deduction</SelectItem>
+                <SelectContent className="glass-card border-0 backdrop-blur-xl shadow-2xl">
+                  <SelectItem value="Salary Deduction" className="text-base py-4 text-foreground hover:bg-secondary/10 rounded-lg m-1">Salary Deduction</SelectItem>
+                  <SelectItem value="Yoma Bank Deduction" className="text-base py-4 text-foreground hover:bg-secondary/10 rounded-lg m-1">Yoma Bank Deduction</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Currency */}
-            <div className="space-y-3">
-              <Label htmlFor="currency" className="text-sm font-semibold text-white">Currency</Label>
+            <div className="space-y-4 group">
+              <Label htmlFor="currency" className="text-sm font-semibold text-foreground">
+                Currency
+              </Label>
               <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger className="glass-input h-12 text-base text-white">
+                <SelectTrigger className="glass-input h-14 text-base text-foreground border-2 border-transparent hover:border-accent/30 transition-all duration-300">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
-                <SelectContent className="glass-card border-0 backdrop-blur-xl">
-                  {/* <SelectItem value="FX" className="text-base py-3 text-white">FX</SelectItem> */}
-                  <SelectItem value="USD" className="text-base py-3 text-white">USD</SelectItem>
-                  <SelectItem value="EUR" className="text-base py-3 text-white">EUR</SelectItem>
-                  <SelectItem value="SGD" className="text-base py-3 text-white">SGD</SelectItem>
-                  <SelectItem value="THB" className="text-base py-3 text-white">THB</SelectItem>
-                  <SelectItem value="MMK" className="text-base py-3 text-white">MMK</SelectItem>
+                <SelectContent className="glass-card border-0 backdrop-blur-xl shadow-2xl">
+                  <SelectItem value="USD" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">USD</SelectItem>
+                  <SelectItem value="EUR" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">EUR</SelectItem>
+                  <SelectItem value="SGD" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">SGD</SelectItem>
+                  <SelectItem value="THB" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">THB</SelectItem>
+                  <SelectItem value="MMK" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">MMK</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Product Price */}
-            <div className="space-y-3">
-              <Label htmlFor="price" className="text-sm font-semibold text-white">Product Price in {currency}</Label>
-              <Input
-                id="price"
-                type="number"
-                placeholder="Enter product price"
-                value={productPrice}
-                onChange={(e) => setProductPrice(e.target.value)}
-                className="glass-input h-12 text-base placeholder:text-white/60 text-white"
-              />
+            <div className="space-y-4 group">
+              <Label htmlFor="price" className="text-sm font-semibold text-foreground">
+                Product Price in {currency}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="price"
+                  type="number"
+                  placeholder="Enter product price"
+                  value={productPrice}
+                  onChange={(e) => setProductPrice(e.target.value)}
+                  className="glass-input h-14 text-base placeholder:text-muted-foreground text-foreground border-2 border-transparent hover:border-primary/30 focus:border-primary/50 transition-all duration-300 pl-12"
+                />
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground font-semibold">
+                  {currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency}
+                </span>
+              </div>
             </div>
 
             {/* Deposit Amount */}
@@ -254,75 +258,73 @@ const LoanCalculator = () => {
         </Card>
 
         {/* Results */}
-        <Card className="glass-card border-0 animate-fade-in animation-delay-400">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-2xl font-bold text-white text-center">
+        <Card className="glass-card border-0 animate-fade-in animation-delay-400 hover-scale">
+          <CardHeader className="pb-6 text-center">
+            <CardTitle className="text-2xl font-bold text-foreground">
               Calculation Results
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass-input p-4 text-center">
-                <Label className="text-xs font-semibold text-white uppercase tracking-wider">Term</Label>
-                <div className="text-xl font-bold text-white mt-1">{term} months</div>
+          <CardContent className="space-y-8">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="glass-input p-6 text-center hover-scale group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
+                <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
+                  Term
+                </Label>
+                <div className="text-2xl font-bold text-foreground">{term} months</div>
               </div>
-              <div className="glass-input p-4 text-center">
-                <Label className="text-xs font-semibold text-white uppercase tracking-wider">Deduction Rate</Label>
-                <div className="text-xl font-bold text-white mt-1">{(results.deductionRate * 100).toFixed(2)}%</div>
+              <div className="glass-input p-6 text-center hover-scale group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
+                <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
+                  Rate
+                </Label>
+                <div className="text-2xl font-bold text-foreground">{(results.deductionRate * 100).toFixed(2)}%</div>
               </div>
             </div>
 
-            <div className="space-y-4 pt-2">
-              <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <Label className="text-sm font-semibold text-white">Product Price (MMK)</Label>
-                <span className="font-bold text-lg text-white">{formatCurrency(priceMmk)} MMK</span>
+            <div className="space-y-6">
+              <div className="glass-input p-6 flex justify-between items-center hover-scale group border-2 border-transparent hover:border-accent/20 transition-all duration-300">
+                <Label className="text-base font-bold text-foreground">Product Price (MMK)</Label>
+                <span className="font-bold text-xl text-foreground">{formatCurrency(priceMmk)} MMK</span>
               </div>
               
-              <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <Label className="text-sm font-semibold text-white">Currency Rate</Label>
-                <span className="font-bold text-lg text-white">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
+              <div className="glass-input p-6 flex justify-between items-center hover-scale group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
+                <Label className="text-base font-bold text-foreground">Currency Rate</Label>
+                <span className="font-bold text-xl text-foreground">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
               </div>
               
-              {/* <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <Label className="text-sm font-semibold text-white">Deduction Amount</Label>
-                <span className="font-bold text-lg text-white">{formatCurrency(results.deductionAmount)} MMK</span>
-              </div> */}
-              
-              <div className="glass-input p-4 flex justify-between items-center hover-scale">
-                <div className="space-y-1">
-                  <Label className="text-sm font-semibold text-white">Admin Fee</Label>
-                  <div className="text-xs text-white/60">
-                    {/* (Based on price range and method) */}
-                  </div>
+              <div className="glass-input p-6 flex justify-between items-center hover-scale group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
+                <div>
+                  <Label className="text-base font-bold text-foreground block">Admin Fee</Label>
                 </div>
-                <span className="font-bold text-lg text-white">{formatCurrency(results.adminFee)} MMK</span>
+                <span className="font-bold text-xl text-foreground">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
-              <div className="glass-input p-6 bg-gradient-to-r from-white/15 to-white/10 border border-white/40 hover-scale">
-                <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <Label className="font-bold text-lg text-white">Monthly Repayment</Label>
-                    <div className="text-sm text-white/70">
-                      {/* PMT Formula with {(results.deductionRate * 100).toFixed(2)}% annual rate */}
-                    </div>
+              <div className="glass-input p-8 bg-gradient-to-r from-primary/5 to-secondary/5 border-2 border-primary/20 hover:border-primary/40 hover-scale transition-all duration-300 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-50"></div>
+                <div className="relative flex justify-between items-center">
+                  <div className="space-y-3">
+                    <Label className="font-bold text-2xl text-foreground">Monthly Repayment</Label>
                   </div>
-                  <span className="text-3xl font-bold text-white">
-                    {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))} MMK
-                  </span>
+                  <div className="text-right">
+                    <span className="text-2xl font-bold text-foreground block">
+                      {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))}
+                    </span>
+                    <span className="text-lg text-muted-foreground font-medium">MMK</span>
+                  </div>
                 </div>
               </div>
               
-              <div className="glass-input p-6 bg-gradient-to-r from-white/10 to-white/15 border border-white/40 hover-scale">
-                <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <Label className="font-bold text-lg text-white">Minimum Salary Required</Label>
-                    <div className="text-sm text-white/70">
-                      {/* (Monthly Repayment ÷ 0.25, rounded down to nearest 1000) */}
-                    </div>
+              <div className="glass-input p-8 bg-gradient-to-r from-secondary/5 to-primary/5 border-2 border-secondary/20 hover:border-secondary/40 hover-scale transition-all duration-300 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5 opacity-50"></div>
+                <div className="relative flex justify-between items-center">
+                  <div className="space-y-3">
+                    <Label className="font-bold text-2xl text-foreground">Minimum Salary Required</Label>
                   </div>
-                  <span className="text-3xl font-bold text-white">
-                    {formatCurrency(results.minSalaryRequirement)} MMK
-                  </span>
+                  <div className="text-right">
+                    <span className="text-2xl font-bold text-foreground block">
+                      {formatCurrency(results.minSalaryRequirement)}
+                    </span>
+                    <span className="text-lg text-muted-foreground font-medium">MMK</span>
+                  </div>
                 </div>
               </div>
             </div>
