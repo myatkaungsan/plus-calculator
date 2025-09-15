@@ -114,12 +114,7 @@ All colors MUST be HSL.
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .glass-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    border-color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.5);
-  }
+  
 
   .glass-input {
     background: rgba(255, 255, 255, 0.6);
@@ -131,12 +126,7 @@ All colors MUST be HSL.
     color: hsl(240 10% 10%);
   }
 
-  .glass-input:hover {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(255, 255, 255, 0.9);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
+  
 
   .glass-input:focus {
     background: rgba(255, 255, 255, 0.8);
@@ -184,9 +174,49 @@ All colors MUST be HSL.
     animation-delay: 0.4s;
   }
 
+  .hover-scale {
+    transition: transform 0.2s ease-out;
+  }
+
   .hover-scale:hover {
     transform: translateY(-2px) scale(1.02);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Interactive Elements */
+  .story-link {
+    position: relative;
+    display: inline-block;
+  }
+
+  .story-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: hsl(var(--primary));
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+  }
+
+  .story-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  .pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 
   @keyframes fadeInGlass {
