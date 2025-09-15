@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Business rules for deduction rates (update)
+// Business rules for deduction rates
 const getDeductionRate = (term: number, method: string): number => {
   if (term >= 3 && term <= 6) {
     return method === 'Salary Deduction' ? 0.0376 : 0.041;
@@ -143,16 +143,16 @@ const LoanCalculator = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+     <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="text-center glass-card animate-fade-in">
+      <div className="text-center glass-card">
         <h1 className="text-4xl font-bold text-foreground mb-4">PLUS+ Calculator</h1>
         <p className="text-muted-foreground text-lg">Advanced loan calculation for product financing</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Input Form */}
-        <Card className="glass-card border-0 animate-fade-in animation-delay-200 hover-scale">
+        <Card className="glass-card border-0"> {/* animate-fade-in animation-delay-200 hover-scale */}
           <CardHeader className="pb-6 text-center">
             <CardTitle className="text-2xl font-bold text-foreground">
               Loan Configuration
@@ -224,7 +224,7 @@ const LoanCalculator = () => {
                   placeholder="Enter product price"
                   value={productPrice}
                   onChange={(e) => setProductPrice(e.target.value)}
-                  className="glass-input h-14 text-base placeholder:text-muted-foreground text-foreground border-2 border-transparent hover:border-primary/30 focus:border-primary/50 transition-all duration-300 pl-12"
+                  className="glass-input h-14 text-base placeholder:text-muted-foreground text-foreground border-2 border-transparent hover:border-primary/30 focus:border-primary/50 transition-all duration-300 pl-16"
                 />
                 <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground font-semibold">
                   {currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency}
@@ -258,7 +258,7 @@ const LoanCalculator = () => {
         </Card>
 
         {/* Results */}
-        <Card className="glass-card border-0 animate-fade-in animation-delay-400 hover-scale">
+         <Card className="glass-card border-0">  {/*animate-fade-in animation-delay-400 hover-scale */}
           <CardHeader className="pb-6 text-center">
             <CardTitle className="text-2xl font-bold text-foreground">
               Calculation Results
@@ -266,46 +266,46 @@ const LoanCalculator = () => {
           </CardHeader>
           <CardContent className="space-y-8">
             <div className="grid grid-cols-2 gap-6">
-              <div className="glass-input p-6 text-center hover-scale group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
+              <div className="glass-input p-6 text-center group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
                 <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
                   Term
                 </Label>
-                <div className="text-2xl font-bold text-foreground">{term} months</div>
+                <div className="text-lg font-bold text-foreground">{term} months</div>
               </div>
-              <div className="glass-input p-6 text-center hover-scale group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
+              <div className="glass-input p-6 text-center group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
                 <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
                   Rate
                 </Label>
-                <div className="text-2xl font-bold text-foreground">{(results.deductionRate * 100).toFixed(2)}%</div>
+                <div className="text-lg font-bold text-foreground">{(results.deductionRate * 100).toFixed(2)}%</div>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div className="glass-input p-6 flex justify-between items-center hover-scale group border-2 border-transparent hover:border-accent/20 transition-all duration-300">
+              <div className="glass-input p-6 flex justify-between items-center group border-2 border-transparent hover:border-accent/20 transition-all duration-300">
                 <Label className="text-base font-bold text-foreground">Product Price (MMK)</Label>
                 <span className="font-bold text-xl text-foreground">{formatCurrency(priceMmk)} MMK</span>
               </div>
               
-              <div className="glass-input p-6 flex justify-between items-center hover-scale group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
+              <div className="glass-input p-6 flex justify-between items-center group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
                 <Label className="text-base font-bold text-foreground">Currency Rate</Label>
                 <span className="font-bold text-xl text-foreground">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
               </div>
               
-              <div className="glass-input p-6 flex justify-between items-center hover-scale group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
+              <div className="glass-input p-6 flex justify-between items-center group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
                 <div>
                   <Label className="text-base font-bold text-foreground block">Admin Fee</Label>
                 </div>
                 <span className="font-bold text-xl text-foreground">{formatCurrency(results.adminFee)} MMK</span>
               </div>
               
-              <div className="glass-input p-8 bg-gradient-to-r from-primary/5 to-secondary/5 border-2 border-primary/20 hover:border-primary/40 hover-scale transition-all duration-300 relative overflow-hidden">
+              <div className="glass-input p-8 bg-gradient-to-r from-primary/5 to-secondary/5 border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-50"></div>
                 <div className="relative flex justify-between items-center">
                   <div className="space-y-3">
-                    <Label className="font-bold text-2xl text-foreground">Monthly Repayment</Label>
+                    <Label className="font-bold text-base text-foreground">Monthly Repayment</Label>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-bold text-foreground block">
+                    <span className="text-xl font-bold text-foreground block">
                       {results.monthlyRepayment < 0 ? '-' : ''}{formatCurrency(Math.abs(results.monthlyRepayment))}
                     </span>
                     <span className="text-lg text-muted-foreground font-medium">MMK</span>
@@ -313,14 +313,14 @@ const LoanCalculator = () => {
                 </div>
               </div>
               
-              <div className="glass-input p-8 bg-gradient-to-r from-secondary/5 to-primary/5 border-2 border-secondary/20 hover:border-secondary/40 hover-scale transition-all duration-300 relative overflow-hidden">
+              <div className="glass-input p-8 bg-gradient-to-r from-secondary/5 to-primary/5 border-2 border-secondary/20 hover:border-secondary/40 transition-all duration-300 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5 opacity-50"></div>
                 <div className="relative flex justify-between items-center">
                   <div className="space-y-3">
-                    <Label className="font-bold text-2xl text-foreground">Minimum Salary Required</Label>
+                    <Label className="font-bold text-base text-foreground">Minimum Salary Required</Label>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-bold text-foreground block">
+                    <span className="text-xl font-bold text-foreground block">
                       {formatCurrency(results.minSalaryRequirement)}
                     </span>
                     <span className="text-lg text-muted-foreground font-medium">MMK</span>
