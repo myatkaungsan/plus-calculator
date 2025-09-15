@@ -90,7 +90,7 @@ const LoanCalculator = () => {
 
   // Helper function to round down to nearest 1000 (4 digits)
   const roundDownToNearest1000 = (num: number): number => {
-    return Math.floor(num / 1000) * 1000;
+    return Math.floor(num / 10000) * 10000;
   };
 
   const pmt = (rate: number, nper: number, pv: number) => {
