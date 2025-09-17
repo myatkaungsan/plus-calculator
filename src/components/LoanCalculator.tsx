@@ -54,7 +54,7 @@ const EXCHANGE_RATES: Record<string, number> = {
 const LoanCalculator = () => {
   const [term, setTerm] = useState<number>(3);
   const [method, setMethod] = useState<string>('Salary Deduction');
-  const [currency, setCurrency] = useState<string>('USD');
+  const [currency, setCurrency] = useState<string>('MMK');
   const [productPrice, setProductPrice] = useState<string>('');
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [priceMmk, setPriceMmk] = useState<number>(0);
@@ -145,9 +145,9 @@ const LoanCalculator = () => {
   return (
      <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="text-center glass-card">
+      <div className="text-center title-card">
         <h1 className="text-4xl font-bold text-foreground mb-4">PLUS+ Calculator</h1>
-        <p className="text-muted-foreground text-lg">Advanced loan calculation for product financing</p>
+        {/* <p className="text-muted-foreground text-lg">Advanced loan calculation for product financing</p> */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -155,7 +155,7 @@ const LoanCalculator = () => {
         <Card className="glass-card border-0"> {/* animate-fade-in animation-delay-200 hover-scale */}
           <CardHeader className="pb-6 text-center">
             <CardTitle className="text-2xl font-bold text-foreground">
-              Loan Configuration
+              BNPL Configuration
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-8">
@@ -198,16 +198,18 @@ const LoanCalculator = () => {
               <Label htmlFor="currency" className="text-sm font-semibold text-foreground">
                 Currency
               </Label>
+              
               <Select value={currency} onValueChange={setCurrency}>
                 <SelectTrigger className="glass-input h-14 text-base text-foreground border-2 border-transparent hover:border-accent/30 transition-all duration-300">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-0 backdrop-blur-xl shadow-2xl">
-                  <SelectItem value="USD" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">USD</SelectItem>
+                  <SelectItem value="MMK" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">MMK</SelectItem>
+                  {/* <SelectItem value="USD" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">USD</SelectItem>
                   <SelectItem value="EUR" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">EUR</SelectItem>
                   <SelectItem value="SGD" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">SGD</SelectItem>
-                  <SelectItem value="THB" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">THB</SelectItem>
-                  <SelectItem value="MMK" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">MMK</SelectItem>
+                  <SelectItem value="THB" className="text-base py-4 text-foreground hover:bg-accent/10 rounded-lg m-1">THB</SelectItem> */}
+                  
                 </SelectContent>
               </Select>
             </div>
@@ -265,20 +267,7 @@ const LoanCalculator = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-8">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="glass-input p-6 text-center group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
-                <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
-                  Term
-                </Label>
-                <div className="text-lg font-bold text-foreground">{term} months</div>
-              </div>
-              <div className="glass-input p-6 text-center group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
-                <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
-                  Rate
-                </Label>
-                <div className="text-lg font-bold text-foreground">{(results.deductionRate * 100).toFixed(2)}%</div>
-              </div>
-            </div>
+            
 
             <div className="space-y-6">
               <div className="glass-input p-6 flex justify-between items-center group border-2 border-transparent hover:border-accent/20 transition-all duration-300">
@@ -286,11 +275,7 @@ const LoanCalculator = () => {
                 <span className="font-bold text-xl text-foreground">{formatCurrency(priceMmk)} MMK</span>
               </div>
               
-              <div className="glass-input p-6 flex justify-between items-center group border-2 border-transparent hover:border-secondary/20 transition-all duration-300">
-                <Label className="text-base font-bold text-foreground">Currency Rate</Label>
-                <span className="font-bold text-xl text-foreground">{formatCurrency(EXCHANGE_RATES[currency])} MMK</span>
-              </div>
-              
+             
               <div className="glass-input p-6 flex justify-between items-center group border-2 border-transparent hover:border-primary/20 transition-all duration-300">
                 <div>
                   <Label className="text-base font-bold text-foreground block">Admin Fee</Label>
