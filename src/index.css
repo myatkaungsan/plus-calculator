@@ -114,6 +114,14 @@ All colors MUST be HSL.
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+   .title-card {
+    padding: 24px;
+    color: hsl(240 10% 10%);
+  }
+
+  .border-01{
+    border-color: #00000012;
+  }
   
 
   .glass-input {
@@ -122,6 +130,7 @@ All colors MUST be HSL.
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 16px;
+    border-color: #00000012 !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: hsl(240 10% 10%);
   }
