@@ -131,7 +131,8 @@ useEffect(() => {
     // total interest (excluding admin fee) = totalPaid - principal - adminFee
     const totalInterest = Math.max(0, totalPaid - principal - adminFee);
 
-    const minSalaryRequirement = roundDownToNearest1000(monthlyRepayment / 0.25);
+    const minSalaryRequirement = roundDownToNearest1000(monthlyRepayment / 0.20);
+    
 
     setResults({
       monthlyRepayment,
