@@ -79,14 +79,26 @@ const LoanCalculator = () => {
   }, [productPrice, currency]);
 
   // Update MMK deposit when currency or deposit amount changes
-  useEffect(() => {
-    if (depositAmount && !isNaN(Number(depositAmount))) {
-      const converted = Number(depositAmount) * EXCHANGE_RATES[currency];
-      setDepositMmk(converted);
-    } else {
-      setDepositMmk(0);
-    }
-  }, [depositAmount, currency]);
+  // useEffect(() => {
+  //   if (depositAmount && !isNaN(Number(depositAmount))) {
+  //     const converted = Number(depositAmount) * EXCHANGE_RATES[currency];
+  //     setDepositMmk(converted);
+  //   } else {
+  //     setDepositMmk(0);
+  //   }
+  // }, [depositAmount, currency]);
+
+  // Update deposit MMK when deposit % or product price changes
+useEffect(() => {
+  if (depositAmount && !isNaN(Number(depositAmount))) {
+    const percent = Number(depositAmount) / 100;
+    const converted = priceMmk * percent; // % of product price in MMK
+    setDepositMmk(converted);
+  } else {
+    setDepositMmk(0);
+  }
+}, [depositAmount, priceMmk]);
+
 
   // Helper function to round down to nearest 1000 (4 digits)
   const roundDownToNearest1000 = (num: number): number => {
@@ -214,6 +226,44 @@ const LoanCalculator = () => {
               </Select>
             </div>
 
+           {/* Deposit Selection */}
+{/* Deposit Selection */}
+<div className="space-y-4 group">
+  <Label htmlFor="deposit" className="text-sm font-semibold text-foreground">
+    Deposit (% of Product Price)
+  </Label>
+  <Select
+    value={depositAmount}
+    onValueChange={(value) => {
+      setDepositAmount(value); // store percentage string
+    }}
+  >
+    <SelectTrigger className="glass-input h-14 text-base text-foreground border-2 border-transparent hover:border-primary/30 transition-all duration-300">
+      <SelectValue placeholder="Select deposit %" />
+    </SelectTrigger>
+    <SelectContent className="glass-card border-0 backdrop-blur-xl shadow-2xl">
+      {[0,10, 20, 30, 40, 50, 60, 70].map((percent) => (
+        <SelectItem key={percent} value={percent.toString()}>
+          {percent}%
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+
+  {/* Show Deposit Value in MMK */}
+  {depositMmk > 0 && (
+    <div className="glass-input p-4 flex justify-between items-center border-2 border-transparent hover:border-primary/20 transition-all duration-300">
+      <span className="text-sm font-semibold text-foreground">
+        Total Deposit Amount
+      </span>
+      <span className="text-base font-bold text-foreground">
+        {formatCurrency(depositMmk)} MMK
+      </span>
+    </div>
+  )}
+</div>
+
+
             {/* Product Price */}
             <div className="space-y-4 group">
               <Label htmlFor="price" className="text-sm font-semibold text-foreground">
@@ -233,19 +283,7 @@ const LoanCalculator = () => {
                 </span>
               </div>
             </div>
-
-            {/* Deposit Amount */}
-            {/* <div className="space-y-3">
-              <Label htmlFor="deposit" className="text-sm font-semibold text-white">Deposit Amount in {currency}</Label>
-              <Input
-                id="deposit"
-                type="number"
-                placeholder="Enter deposit amount"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                className="glass-input h-12 text-base placeholder:text-white/60 text-white"
-              />
-            </div> */}
+           
 
             {/* Price in MMK (Auto-calculated) */}
             {/* <div className="space-y-3">
